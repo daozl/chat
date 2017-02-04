@@ -52,7 +52,7 @@ enum cmd
 	EXIT,
 	USERHELP,
 	USEREXIT,
-	CAHT,
+	CHAT,
 	ALL,
 	SEE,
 	DATA,

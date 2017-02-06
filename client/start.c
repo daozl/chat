@@ -1,7 +1,7 @@
 #include "head.h"
 #include "start.h"
 
-void Start()
+void start()
 {
 	system("reset");
 	printf("\n\n\n");
@@ -19,7 +19,7 @@ void Start()
 	printf("\t\t\t\t\t|______________________________________|\n");
 }
 
-void Reg_Start()
+void reg_start()
 {
 	printf("\033[1;1H\033[J");
 	printf("\n\n\n");
@@ -40,7 +40,7 @@ void Reg_Start()
 	printf("\033[60C");
 }
 
-void Log_Start()
+void log_start()
 {
 	printf("\033[1;1H\033[J");
 	printf("\n\n\n");
@@ -59,7 +59,7 @@ void Log_Start()
 	printf("\033[60C");
 }
 
-void Admin_Start(char *name)
+void admin_start(char *name)
 {
 	printf("\033[1;1H\033[J");
 	printf("______________________________________________________________________________________________________________________\n");
@@ -92,7 +92,7 @@ void Admin_Start(char *name)
 	printf("|____________________________________________________________________________________________________________________|\n");
 }
 
-void Client_Start(char *name)
+void client_start(char *name)
 {
 	printf("\033[1;1H\033[J");
 	printf("______________________________________________________________________________________________________________________\n");

@@ -17,11 +17,7 @@
 #include <netinet/in.h>
 #include <signal.h>
 #include <time.h>
-#include <pthread.h>
 #include <sqlite3.h>
-#include <termios.h>
-#include <assert.h>
-#include <netdb.h>
 
 #define MAX		1024
 #define PORT	8888

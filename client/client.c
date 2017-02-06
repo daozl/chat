@@ -25,7 +25,7 @@ int main(int argc,char *argv[])
 		printf("Error! gethostbyname failure!\n");
 		exit(1);
 	}
-	if((sockfd = socket(AF_INET,SOCK_STERM,0)) < 0){
+	if((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0){
 		printf("Error! socket failure!\n");
 		exit(1);
 	}
@@ -34,7 +34,7 @@ int main(int argc,char *argv[])
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr = *((struct in_addr *)host->h_addr);
 
-	if (connect(sockfd,(struct sockfd *)&server_addr,sizeof(struct sockaddr)) < 0){
+	if (connect(sockfd,(struct sockaddr *)&server_addr,sizeof(struct sockaddr)) < 0){
 		printf("Error! connect failure!\n");
 		exit(1);
 	}
@@ -54,7 +54,7 @@ int main(int argc,char *argv[])
 				sleep(3);
 				printf("\033[12;42H\033[38X");
 				break;
-			case Log:
+			case LOG:
 				Log(sockfd,&temp);
 				if(strcmp(temp.name,"admin")){
 					admin++;
@@ -77,35 +77,138 @@ int main(int argc,char *argv[])
 					printf("\033[11;50H\033[41m 接受到错误的服务器消息！\033[0m\n");
 				}
 				break;
+			case USERHELP:
+				printf("\033[13;42H\033[38X");
+				printf("\033[13;48H\43mCopyright @ 2016-2017,shen \033[0m\n");
+				printf("\033[14;53H\033[43mAll Rights Reserve\033[0m\n");
+				sleep(3);
+				printf("\033[14;42H\033[38X");
+				break;
+			case USEREXIT:
+				system("reset");
+				exit(0);
+			default:
+				printf("\033[13;42H\033[38X");
+				printf("\033[13;53H\033[41m您输入的命令有误！\033[0m\n");
+				sleep(2);
 		}
 	}
+	if(admin == 2){
+		admin_start(temp.name);
+	}
+	else{
+		client_start(temp.name);
+	}
+
+	pthread_create(&tid,NULL,thread_read,(void *)&sockfd);
+	while(1){
+		check_screen();
+		time(&timep);
+		strcpy(tm,ctime(&timep));
+		tm[strlen(tm) - 1] = '\0';
+		printf("\033[27;2H\033[100X\033[1A\033[100X\033[1A\033[100X\033[1A\033[100X");
+		fflush(stdout);
+		my_fgets(cmd,MAX,stdin);
+		printf("\033[24;2H\033[100X");
+		fflush(stdout);
+		if(admin == 2){
+			temp.cmd = analy_admin_cmd(cmd);
+		}
+		else{
+			temp.cmd = analy_client_cmd(cmd);
+		}
+		strcpy(temp.time,tm);
+		switch(temp.cmd)
+		{
+			case CHAT:
+				chat_one(sockfd,&temp);
+				sleep(1);
+				break;
+			case ALL:
+				chat_all(sockfd,&temp);
+				sleep(1);
+				break;
+			case SEE:
+				handle_see_board();
+				see(sockfd,&temp);
+				sleep(3);
+				break;
+			case DATA:
+				{
+					char ch[MAX] = "no";
+					printf("\033[1;1H\033[J");
+					fflush(stdout);
+					data(sockfd,&temp);
+					sleep(3);
+					printf("Please input yes\n");
+					while(strcmp(ch,"yes") != 0){
+						my_fgets(ch,MAX,stdin);
+					}
+					if(admin == 2){
+						admin_start(temp.name);
+					}
+					else{
+						client_start(temp.name);
+					}
+					sleep(2);
+				}
+				break;
+			case FACE:
+				face(sockfd,&temp);
+				sleep(1);
+				break;
+			case HI:
+				hi(sockfd,&temp);
+				sleep(1);
+				break;
+			case PASSWORD:
+				password(sockfd,&temp);
+				sleep(3);
+				break;
+			case TRANS:
+				trans(sockfd,&temp);
+				sleep(5);
+				break;
+			case CHANGE:
+				change(sockfd,&temp);
+				sleep(1);
+				break;
+			case KICK:
+				kick(sockfd,&temp);
+				sleep(1);
+				break;
+			case SHUT:
+				shut(sockfd,&temp);
+				sleep(1);
+				break;
+			case REMOVE:
+				Remove(sockfd,&temp);
+				sleep(1);
+				break;
+			case CANCEL:
+				cancel(sockfd,&temp);
+				sleep(1);
+				break;
+			case HELP:
+				if(admin == 2){
+					admin_start(temp.name);
+				}
+				else{
+					client_start(temp.name);
+				}
+				sleep(1);
+				break;
+			case EXIT:
+				exit_tell(sockfd,&temp);
+				sleep(1);
+				system("reset");
+				exit(0);
+			default:
+				printf("您输入的命令有误！\n");
+				sleep(1);
+				break;
+		}
+	}
+	close(sockfd);
+	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

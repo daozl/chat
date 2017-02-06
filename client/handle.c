@@ -58,7 +58,7 @@ void reg(int sockfd,struct chat *temp)
 	printf("\n");
 	if(strcmp(password,password1) == 0){
 		printf("\n");
-		print("\033[12;47H 正在注册中，请稍等一会儿");
+		printf("\033[12;47H 正在注册中，请稍等一会儿");
 		wait_dian();
 		strcpy(temp->password,password);
 		write(sockfd,temp,sizeof(struct chat));
@@ -114,7 +114,7 @@ void chat_all(int sockfd,struct chat *temp)
 	printf("\033[24;2H请输入发送的内容：");
 	my_fgets(temp->msg,1024,stdin);
 	write(sockfd,temp,sizeof(struct chat));
-	printf("\033[%s;2H你对 %s 说：%s (%s)\n",row++,temp->toname,temp->msg,temp->time);
+	printf("\033[%d;2H你对 %s 说：%s (%s)\n",row++,temp->toname,temp->msg,temp->time);
 }
 void see(int sockfd,struct chat *temp)
 {
@@ -190,7 +190,7 @@ void face(int sockfd,struct chat *temp)
 	else{
 		printf("\033[27;2H非法指令！\n");
 	}
-	print("\033[5;8H%s\n",face);
+	printf("\033[5;8H%s\n",face);
 }
 
 void hi(int sockfd,struct chat *temp)

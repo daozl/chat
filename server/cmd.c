@@ -156,11 +156,17 @@ int cmd_user(sqlite3 *db,struct chat *temp,int sockfd)
 		case CHANGE:
 			{
 				flag = inquire_user_sql(db,temp->toname);
-				if(flag == 1){
-					return update_data_sql(db,temp->name,temp->name);
+				if(USERIN == flag){
+					return REGNO;
 				}
 				else{
-					return 0;
+					flag = update_user_sql(db,temp->name,temp->toname);
+					if(flag == 1){
+						return update_data_sql(db,temp->name,temp->name);
+					}
+					else{
+						return 0;
+					}
 				}
 				break;
 			}

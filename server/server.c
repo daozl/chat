@@ -20,7 +20,7 @@ int main()
 	int addr_len;
 	int i;
 	int n;
-	char add_ip[20];
+	char addr_ip[20];
 	time_t timep;
 	char tm[128];
 	sqlite3 *db = NULL;
@@ -37,11 +37,11 @@ int main()
 	insert_server_sql(db,tm);
 	start_server();
 
-	if((sockfd = sockfd(AF_INET,SOCK_STREAM,0)) < 0){
+	if((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0){
 		printf("socket failure!\n");
 		exit(1);
 	}
-	if(setsockopt(sockfd,SQL_SOCKET,SO_REUSEADDR,&option,sizeof(option)) < 0){
+	if(setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&option,sizeof(option)) < 0){
 		printf("setsockfd failure!\n");
 		exit(1);
 	}
@@ -90,8 +90,8 @@ int main()
 			if(maxfd < accfd){
 				maxfd = accfd;
 			}
-			if(max < i){
-				maxi = i
+			if(maxi < i){
+				maxi = i;
 			}
 			if(--nready <= 0){
 				continue;
@@ -106,7 +106,7 @@ int main()
 				printf("客户端clifd = %d 已经连接...\n",clifd);
 				n = read(clifd,&temp,sizeof(struct chat));
 				if(n == 0){
-					printf("客户端clifd = %d 已经离开本服务器");
+					printf("客户端clifd = %d 已经离开本服务器\n",clifd);
 					delete_online_sql(db,clifd);
 					fflush(stdout);
 					close(clifd);
@@ -115,7 +115,7 @@ int main()
 				}
 				else{
 					temp.sockfd = clifd;
-					inet_ntop(AF_INDET,&client_addr.sin_addr,addr_ip,sizeof(addr_ip));
+					inet_ntop(AF_INET,&client_addr.sin_addr,addr_ip,sizeof(addr_ip));
 					addr_ip[strlen(addr_ip)] = '\0';
 					printf("客户端ip = %s,端口port = %d\n",addr_ip,ntohs(client_addr.sin_port));
 					temp.revert = cmd_user(db,&temp,clifd);
@@ -138,7 +138,7 @@ int main()
 					else if(temp.revert == MYFLAGOK || temp.revert == MYFLAGNO){
 						write(temp.sockfd,&temp,sizeof(struct chat));
 					}
-					else if(temp.revert == TOFLAGOK || temp.revert == TOFALGNO){
+					else if(temp.revert == TOFLAGOK || temp.revert == TOFLAGNO){
 						write(temp.sockfd,&temp,sizeof(struct chat));
 					}
 					else if(temp.revert == TRANSOK){

@@ -4,7 +4,7 @@
 void check_sql(int rc,sqlite3 *db)
 {
 	if(rc != SQLITE_OK){
-		printf("SQL error : %s %d\n",sqlite3_errmsg(db),__line__);
+		printf("SQL error : %s %d\n",sqlite3_errmsg(db),__LINE__);
 		exit(1);
 	}
 }
@@ -31,7 +31,7 @@ void create_data_sql(sqlite3 *db)
 	int rc;
 
 	sprintf(sql,"create table data(id interger primary key autoincrement,time text,name text,toname text,msg text)");
-	rc = sqlite3_exec(db,sql,NULL,NULL,NULL,);
+	rc = sqlite3_exec(db,sql,NULL,NULL,NULL);
 }
 
 void create_online_sql(sqlite3 *db)
@@ -81,7 +81,7 @@ void delete_online_sql(sqlite3 *db,int sockfd)
 	check_sql(rc,db); 
 }
 
-int inquire_user_sql(sqlite *db, char *user)
+int inquire_user_sql(sqlite3 *db, char *user)
 {
 	int rc;
 	int userflag = 1;
@@ -100,6 +100,24 @@ int inquire_user_sql(sqlite *db, char *user)
 	return USEROUT;
 }
 
+int inquire_id_sql(sqlite3 *db, char *user)
+{
+	int rc;
+	int userflag = 1;
+	sqlite3_stmt *stmt = NULL;
+
+	rc = sqlite3_prepare_v2(db,"select * from user", -1,&stmt,0);
+	check_sql(rc,db);
+	rc = sqlite3_step(stmt);
+	while(SQLITE_ROW == rc){
+		userflag = strcmp(user,sqlite3_column_text(stmt,1));
+		if(userflag == 0){
+			return atoi(sqlite3_column_text(stmt,0));
+		}
+		rc = sqlite3_step(stmt);
+	}
+	return USEROUT;
+}
 int inquire_password_sql(sqlite3 *db,char *user, char *password)
 {
 	int rc;
@@ -109,7 +127,7 @@ int inquire_password_sql(sqlite3 *db,char *user, char *password)
 
 	rc = sqlite3_prepare_v2(db,"select * from user",-1,&stmt,0);
 	check_sql(rc,db);
-	rc = sqlites_step(stmt);
+	rc = sqlite3_step(stmt);
 	while(SQLITE_ROW == rc)
 	{
 		userflag = strcmp(user,sqlite3_column_text(stmt,1));
@@ -147,7 +165,7 @@ void insert_server_sql(sqlite3 *db ,char *name)
 	char sql[MAX];
 	int rc;
 	sprintf(sql,"insert into server(time) values('%s')",time);
-	rc = sql(sqlite3_exec(db,sql,NULL,NULL,NULL);
+	rc = sqlite3_exec(db,sql,NULL,NULL,NULL);
 	check_sql(rc,db);
 }
 
@@ -168,7 +186,7 @@ int inquire_online_fd_sql(sqlite3 *db,char *user)
 	int userflag = 1;
 	sqlite3_stmt *stmt = NULL;
 
-	rc = sqlite3_prepare_v29(db,"select * from online",-1,&stmt,0);
+	rc = sqlite3_prepare_v2(db,"select * from online",-1,&stmt,0);
 	check_sql(rc,db);
 	rc = sqlite3_step(stmt);
 	while(SQLITE_ROW == rc){
@@ -249,7 +267,7 @@ int update_user_sql(sqlite3 *db,char *name,char *toname)
 	}
 }
 
-int update_date_sql(sqlite3 *db,char *name,char *toname)
+int update_data_sql(sqlite3 *db,char *name,char *toname)
 {
 	char sql[MAX];
 	int rc;
@@ -326,7 +344,7 @@ void send_data_sql(sqlite3 *db,struct chat *temp)
 	int userflag = 1;
 	sqlite3_stmt *stmt = NULL;
 
-	rc = sqlite3_prepare_v2(db,"select * from data",&stmt,0);
+	rc = sqlite3_prepare_v2(db,"select * from data",-1,&stmt,0);
 	check_sql(rc,db);
 	rc = sqlite3_step(stmt);
 	while(rc == SQLITE_ROW){

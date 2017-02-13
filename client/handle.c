@@ -64,7 +64,7 @@ void reg(int sockfd,struct chat *temp)
 		write(sockfd,temp,sizeof(struct chat));
 		memset(temp,0,sizeof(struct chat));
 		temp->revert = -999;
-		read(sockfd,temp,sizeof(sizeof(struct chat)));
+		read(sockfd,temp,sizeof(struct chat));
 		printf("\033[12;42H\033[38X");
 		if(REGOK == temp->revert){
 			printf("\033[12;47H 您已经注册成功，欢迎您的使用! \n");

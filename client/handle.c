@@ -180,7 +180,7 @@ void face(int sockfd,struct chat *temp)
 		write(sockfd,temp,sizeof(struct chat));
 		printf("\033[%d;2H你对 %s 说：%s (%s)\n",row++,temp->toname,temp->msg,temp->time);
 	}
-	else if(strcmp(buf,"all")){
+	else if(strcmp(buf,"all") == 0){
 		strcpy(temp->toname,"所有人");
 		strcpy(temp->msg,face);
 		temp->cmd = ALL;
@@ -263,7 +263,7 @@ void password(int sockfd,struct chat *temp)
 	printf("\033[25;2H请再次输入密码（小于二十个字）：");
 	password1 = (char *)secret_password();
 	printf("\n");
-	if(strcmp(password,password1)){
+	if(strcmp(password,password1) == 0){
 		strcpy(temp->password,password);
 		write(sockfd,temp,sizeof(struct chat));
 	}

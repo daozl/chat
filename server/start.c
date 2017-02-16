@@ -1,7 +1,7 @@
 #include "head.h"
 #include "start.h"
 
-void start_server()
+void Start_Server()
 {
 	system("reset");
 	printf("*******************************************************\n");

@@ -1,6 +1,6 @@
-#ifndef START_H__
-#define START_H__
+#ifndef __START__
+#define __START__
 
-void start_server();
+void Start_Server();
 
 #endif

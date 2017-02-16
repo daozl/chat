@@ -1,30 +1,30 @@
-#ifndef SQL_HANDLE_H__
-#define SQL_HANDLE_H__
+#ifndef __SQL_HANDLE__
+#define __SQL_HANDLE__
 
-void check_sql(int rc,sqlite3 *db);
-void open_sql(sqlite3 **db);
-void create_user_sql(sqlite3 *db);
-void create_data_sql(sqlite3 *db);
-void create_online_sql(sqlite3 *db);
-void create_server_sql(sqlite3 *db);
-void reg_sql(sqlite3 *db,char *name,char *password);
-void log_sql(sqlite3 *db,char *name,int sockfd);
-void delete_online_sql(sqlite3 *db,int sockfd);
-int inquire_user_sql(sqlite3 *db,char *user);
-int inquire_id_sql(sqlite3 *db,char *user);
-int inquire_password_sql(sqlite3 *db,char *user,char *password);
-int inquire_online_sql(sqlite3 *db,char *user);
-void insert_server_sql(sqlite3 *db,char *time);
-void insert_data_sql(sqlite3 *db,struct chat *temp);
-int inquire_online_fd_sql(sqlite3 *db, char *user);
-int inquire_online_flag_sql(sqlite3 *db,char *user);
-int update_flag_sql(sqlite3 *db,char *name, int flag);
-int update_password_sql(sqlite3 *db,char *name,char *password);
-int update_user_sql(sqlite3 *db,char *name,char *toname);
-int update_data_sql(sqlite3 *db,char *name,char *toname);
-int delete_user_sql(sqlite3 *db,char *name);
-void see_online_all_sql(sqlite3 *db,struct chat *temp);
-void send_online_all_sql(sqlite3 *db,struct chat *temp);
-void send_data_sql(sqlite3 *db,struct chat *temp);
+void Check_Sql(int rc, sqlite3 *db);
+void Open_Sql(sqlite3 **db);
+void Create_User_Sql(sqlite3 *db);
+void Create_Data_Sql(sqlite3 *db);
+void Create_Online_Sql(sqlite3 *db);
+void Create_Server_Sql(sqlite3 *db);
+void Reg_Sql(sqlite3 *db, char *name, char *password);
+void Log_Sql(sqlite3 *db, char *name, int sockfd);
+void Delete_Online_Sql(sqlite3 *db, int sockfd);
+int Inquire_User_Sql(sqlite3 *db, char *user);
+int Inquire_Id_Sql(sqlite3 *db, char *user);
+int Inquire_Password_Sql(sqlite3 *db, char *user, char *password);
+int Inquire_Online_Sql(sqlite3 *db, char *user);
+void Insert_Server_Sql(sqlite3 *db, char *time);
+void Insert_Data_Sql(sqlite3 *db, struct chat *temp);
+int Inquire_Online_Fd_Sql(sqlite3 *db, char *user);
+int Inquire_Online_Flag_Sql(sqlite3 *db, char *user);
+int Update_Flag_Sql(sqlite3 *db, char *name, int flag);
+int Update_Password_Sql(sqlite3 *db, char *name, char *password);
+int Update_User_Sql(sqlite3 *db, char *name, char *toname);
+int Update_Data_Sql(sqlite3 *db, char *name, char *toname);
+int Delete_User_Sql(sqlite3 *db, char *name);
+void See_Online_All_Sql(sqlite3 *db, struct chat *temp);
+void Send_Online_All_Sql(sqlite3 *db, struct chat *temp);
+void Send_Data_Sql(sqlite3 *db, struct chat *temp);
 
 #endif

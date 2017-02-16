@@ -1,4 +1,4 @@
-objs=server.o start.o sql_handle.o cmd.o
+objs = server.o start.o sql_handle.o cmd.o
 server:$(objs)
 	gcc $(objs) -o server -lsqlite3
 server.o:server.c
@@ -12,6 +12,4 @@ cmd.o:cmd.c
 
 .PHONY:clean
 clean:
-	rm server $(objs) 
-
-
+	-rm server $(objs)

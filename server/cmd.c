@@ -1,121 +1,157 @@
 #include "head.h"
 #include "cmd.h"
 
-int cmd_user(sqlite3 *db,struct chat *temp,int sockfd)
+int Cmd_User(sqlite3 *db, struct chat *temp, int sockfd)
 {
 	int flag;
 	int sayflag;
-	printf("cmd = %d\n",temp->cmd);
+	printf("cmd = %d\n", temp->cmd);
 	switch (temp->cmd)
 	{
 		case REG:
-			flag = inquire_user_sql(db,temp->name);
-			if(flag == USERIN){
-				return REGNO;
+			{
+				flag = Inquire_User_Sql(db, temp->name);
+				if (USERIN == flag)
+				{
+					return REGNO;
+				}
+				else
+				{
+					Reg_Sql(db, temp->name, temp->password);
+					temp->flag = Inquire_Id_Sql(db, temp->name);
+					return REGOK;
+				}
+				break;
 			}
-			else{
-				reg_sql(db,temp->name,temp->password);
-				temp->flag = inquire_id_sql(db,temp->name);
-				return REGOK;
-			}
-			break;
+
 		case LOG:
 			{
 				int flagpassword;
-				flag = inquire_online_sql(db,temp->name);
-				if(ONLINEIN == flag){
+				flag = Inquire_Online_Sql(db, temp->name);
+				if (ONLINEIN == flag)
+				{
 					return ONLINEIN;
 				}
-				else{
-					flagpassword = inquire_password_sql(db,temp->name,temp->password);
-					if(PASSWORDOK == flagpassword){
-						log_sql(db,temp->name,sockfd);
+				else
+				{
+					flagpassword = Inquire_Password_Sql(db, temp->name, temp->password);
+					if (PASSWORDOK == flagpassword)
+					{
+						Log_Sql(db, temp->name, sockfd);
 						return PASSWORDOK;
 					}
-					else{
+					else
+					{
 						return PASSWORDNO;
 					}
 				}
 				break;
 			}
+
 		case CHAT:
 			{
 				int tempfd;
-				tempfd = inquire_online_fd_sql(db,temp->toname);
-				if(ONLINEOUT == tempfd){
+				tempfd = Inquire_Online_Fd_Sql(db, temp->toname);
+				if (ONLINEOUT == tempfd)
+				{
 					return ONLINEOUT;
 				}
-				else{
-					sayflag = inquire_online_flag_sql(db,temp->name);
-					if(sayflag == 0){
+				else
+				{
+					sayflag = Inquire_Online_Flag_Sql(db, temp->name);
+					if (0 == sayflag)
+					{
 						return MYFLAGNO;
 					}
-					else{
-						temp->flag = flag;
+					else
+					{
+						temp->flag = flag; 
 						temp->sockfd = tempfd;
-						insert_data_sql(db,temp);
+						Insert_Data_Sql(db, temp);
 						return CHATOK;
 					}
 				}
 				break;
 			}
+
 		case ALL:
-			sayflag = inquire_online_flag_sql(db,temp->name);
-			if(sayflag == 0){
-				return MYFLAGNO;
-			}
-			else{
-				insert_data_sql(db,temp);
-				return ALLOK;
-			}
-			break;
-		case PASSWORD:
-			flag = update_password_sql(db,temp->name,temp->password);
-			return flag;
-			break;
-		case KICK:
 			{
-				int tempfd;
-				tempfd = inquire_online_fd_sql(db,temp->toname);
-				if(ONLINEOUT == tempfd){
-					return ONLINEOUT;
+				sayflag = Inquire_Online_Flag_Sql(db, temp->name);
+				if (0 == sayflag)
+				{
+					return MYFLAGNO;
 				}
-				else{
-					temp->sockfd = tempfd;
+				else
+				{
+					Insert_Data_Sql(db, temp);
+					return ALLOK;
 				}
 				break;
 			}
+
+		case PASSWORD:
+			{
+				flag = Update_Password_Sql(db, temp->name, temp->password);
+				return flag;
+				break;
+			}
+
+		case KICK:
+			{
+				int tempfd;
+				tempfd = Inquire_Online_Fd_Sql(db, temp->toname);
+				if (ONLINEOUT == tempfd)
+				{
+					return ONLINEOUT;
+				}
+				else
+				{
+					temp->sockfd = tempfd;
+					return KICKOK;
+				}
+				break;
+			}
+
 		case SHUT:
 			{
 				int tempfd;
-				tempfd = inquire_online_fd_sql(db,temp->toname);
-				if(ONLINEOUT == tempfd){
+				tempfd = Inquire_Online_Fd_Sql(db, temp->toname);
+				if (ONLINEOUT == tempfd)
+				{
 					return ONLINEOUT;
 				}
-				else{
-					flag = update_flag_sql(db,temp->toname);
-					if(flag == 1){
+				else
+				{
+					flag = Update_Flag_Sql(db, temp->toname, 0);
+					if (1 == flag)
+					{
 						temp->sockfd = tempfd;
 					}
 					return flag;
 				}
 				break;
 			}
+
 		case REMOVE:
 			{
 				int tempfd;
-				tempfd = inquire_online_fd_sql(db,temp->toname);
-				if(ONLINEOUT == tempfd){
+				tempfd = Inquire_Online_Fd_Sql(db,temp->toname);
+				if (ONLINEOUT == tempfd)
+				{
 					return ONLINEOUT;
 				}
-				else{
-					sayflag = inquire_online_flag_sql(db,temp->toname);
-					if(sayflag == 1){
+				else
+				{
+					sayflag = Inquire_Online_Flag_Sql(db, temp->toname);
+					if (1 == sayflag)
+					{
 						return TOFLAGOK;
 					}
-					else{
-						flag = update_flag_sql(db,temp->toname,1);
-						if(flag == 1){
+					else
+					{
+						flag = Update_Flag_Sql(db, temp->toname, 1);
+						if (1 == flag)
+						{
 							temp->sockfd = tempfd;
 						}
 						return flag;
@@ -123,48 +159,65 @@ int cmd_user(sqlite3 *db,struct chat *temp,int sockfd)
 				}
 				break;
 			}
+
 		case CANCEL:
 			{
 				int tempfd;
-				tempfd = inquire_online_fd_sql(db,temp->toname);
-				if(ONLINEOUT == tempfd){
-					flag = delete_user_sql(db,temp->toname);
+				tempfd = Inquire_Online_Fd_Sql(db, temp->toname);
+				if (ONLINEOUT == tempfd)
+				{
+					flag = Delete_User_Sql(db, temp->toname);
 					return flag;
-				}	
-				else{
+				}
+				else
+				{
 					return ONLINEIN;
 				}
 				break;
 			}
+
 		case SEE:
+			{
 				return SEEOK;
 				break;
+			}
+
 		case DATA:
-			return DATAOK;
+			{
+				return DATAOK;
+			}
+
 		case TRANS:
 			{
 				int tempfd;
-				tempfd = inquire_online_fd_sql(db,temp->toname);
-				if(ONLINEOUT == tempfd){
+				tempfd = Inquire_Online_Fd_Sql(db, temp->toname);
+				if (ONLINEOUT == tempfd)
+				{
 					return ONLINEOUT;
 				}
-				else{
+				else
+				{
 					temp->sockfd = tempfd;
 					return TRANSOK;
 				}
 			}
+
 		case CHANGE:
 			{
-				flag = inquire_user_sql(db,temp->toname);
-				if(USERIN == flag){
+				flag = Inquire_User_Sql(db, temp->toname);
+				if (USERIN == flag)
+				{
 					return REGNO;
 				}
-				else{
-					flag = update_user_sql(db,temp->name,temp->toname);
-					if(flag == 1){
-						return update_data_sql(db,temp->name,temp->name);
+				else
+				{
+					flag = Update_User_Sql(db, temp->name, temp->toname);
+					if (1 == flag)
+					{
+						return Update_Data_Sql(db, temp->name, temp->toname);
 					}
-					else{
+					else
+					{
 						return 0;
 					}
 				}

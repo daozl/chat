@@ -26,143 +26,179 @@ int main()
 	sqlite3 *db = NULL;
 	int option = 1;
 
-	open_sql(&db);
-	create_user_sql(db);
-	create_data_sql(db);
-	create_online_sql(db);
-	create_server_sql(db);
+	Open_Sql(&db);
+	Create_User_Sql(db);
+	Create_Data_Sql(db);
+	Create_Online_Sql(db);
+	Create_Server_Sql(db);
 	time(&timep);
-	strcpy(tm,ctime(&timep));
+	strcpy(tm, ctime(&timep));
 	tm[strlen(tm) - 1] = '\0';
-	insert_server_sql(db,tm);
-	start_server();
+	Insert_Server_Sql(db, tm);
+	Start_Server();
 
-	if((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0){
+	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	{
 		printf("socket failure!\n");
 		exit(1);
 	}
-	if(setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&option,sizeof(option)) < 0){
-		printf("setsockfd failure!\n");
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) < 0)
+	{
+		printf("setsockopt failure!\n");
 		exit(1);
 	}
-	memset(&server_addr,0,sizeof(struct sockaddr_in));
+	memset(&server_addr, 0, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	if(bind(sockfd,(struct sockaddr *)&server_addr,sizeof(struct sockaddr)) < 0){
+	if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) < 0)
+	{
 		printf("bind failure!\n");
 		exit(1);
 	}
-	if(listen(sockfd,10) < 0){
+	if (listen(sockfd, 10) < 0)
+	{
 		printf("listen failure!\n");
 		exit(1);
 	}
-	printf("----->服务器正在等待客户连接.....\n");
+	printf("----->服务器正在等待客户端连接.....\n");
 
 	maxfd = sockfd;
 	maxi = -1;
-	for(i = 0; i < FD_SETSIZE;i++){
+	for (i = 0; i < FD_SETSIZE; i++)
+	{
 		client[i] = -1;
 	}
 	FD_ZERO(&allset);
-	FD_SET(sockfd,&allset);
-	while(1){
+	FD_SET(sockfd, &allset);
+	while (1)
+	{
 		rset = allset;
-		nready = select(maxfd + 1,&rset,NULL,NULL,NULL);
-		if(FD_ISSET(sockfd,&rset)){
+		nready = select(maxfd + 1, &rset, NULL, NULL, NULL);
+		if (FD_ISSET(sockfd, &rset))
+		{
 			addr_len = sizeof(struct sockaddr_in);
-			if((accfd = accept(sockfd,(struct sockaddr *)&client_addr,&addr_len)) < 0){
+			if ((accfd = accept(sockfd, (struct sockaddr *)&client_addr, &addr_len)) < 0)
+			{
 				printf("accept failure!\n");
 				exit(1);
 			}
-			for(i = 0; i < FD_SETSIZE; i++)
+			for (i = 0; i < FD_SETSIZE; i++)
 			{
-				if(client[i] < 0){
+				if (client[i] < 0)
+				{
 					client[i] = accfd;
 					break;
 				}
 			}
-			if(i == FD_SETSIZE){
-				printf("Full client!\n");
+			if (FD_SETSIZE == i)
+			{
+				printf("Full clients!\n");
 				exit(1);
 			}
-			FD_SET(accfd,&allset);
-			if(maxfd < accfd){
+			FD_SET(accfd, &allset);
+			if (accfd > maxfd)
+			{
 				maxfd = accfd;
 			}
-			if(maxi < i){
+			if (i > maxi)
+			{
 				maxi = i;
 			}
-			if(--nready <= 0){
+			if (--nready <= 0)
+			{
 				continue;
 			}
 		}
 
-		for(i = 0; i < FD_SETSIZE;i++){
-			if((clifd = client[i]) < 0){
+		for (i = 0; i < FD_SETSIZE; i++)
+		{
+			if ((clifd = client[i]) < 0)
+			{
 				continue;
 			}
-			if(FD_ISSET(clifd,&rset)){
-				printf("客户端clifd = %d 已经连接...\n",clifd);
-				n = read(clifd,&temp,sizeof(struct chat));
-				if(n == 0){
-					printf("客户端clifd = %d 已经离开本服务器\n",clifd);
-					delete_online_sql(db,clifd);
+			if (FD_ISSET(clifd, &rset))
+			{
+				printf("客户端clifd = %d 已经成功连接...\n", clifd);
+				n = read(clifd, &temp, sizeof(struct chat));
+				if (0 == n)
+				{
+					printf("客户端clifd = %d 已经离开本服务器...\n", clifd);
+					Delete_Online_Sql(db, clifd);
 					fflush(stdout);
 					close(clifd);
-					FD_CLR(clifd,&allset);
+					FD_CLR(clifd, &allset);
 					client[i] = -1;
 				}
-				else{
+				else
+				{
 					temp.sockfd = clifd;
-					inet_ntop(AF_INET,&client_addr.sin_addr,addr_ip,sizeof(addr_ip));
+					inet_ntop(AF_INET, &client_addr.sin_addr, addr_ip, sizeof(addr_ip));
 					addr_ip[strlen(addr_ip)] = '\0';
-					printf("客户端ip = %s,端口port = %d\n",addr_ip,ntohs(client_addr.sin_port));
-					temp.revert = cmd_user(db,&temp,clifd);
+					printf("客户端ip = %s , 端口port = %d\n", addr_ip, ntohs(client_addr.sin_port));
+					temp.revert = Cmd_User(db, &temp, clifd);
 					printf("开始向客户端发送命令...\n");
-					if(temp.revert == REGOK || temp.revert == REGNO){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					if (REGOK == temp.revert || REGNO == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == 1 || temp.revert == 0){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (1 == temp.revert || 0 == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == PASSWORDOK || temp.revert == PASSWORDNO){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (PASSWORDOK == temp.revert || PASSWORDNO == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == USERIN || temp.revert == USEROUT){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (USERIN == temp.revert || USEROUT == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == ONLINEIN || temp.revert == ONLINEOUT){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (ONLINEIN == temp.revert || ONLINEOUT == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == MYFLAGOK || temp.revert == MYFLAGNO){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (MYFLAGOK == temp.revert || MYFLAGNO == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == TOFLAGOK || temp.revert == TOFLAGNO){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (TOFLAGOK == temp.revert || TOFLAGNO == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == TRANSOK){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (TRANSOK == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == KICKOK){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (KICKOK == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == CHATOK){
-						write(temp.sockfd,&temp,sizeof(struct chat));
+					else if (CHATOK == temp.revert)
+					{
+						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if(temp.revert == DATAOK){
-						send_data_sql(db,&temp);
+					else if (DATAOK == temp.revert)
+					{
+						Send_Data_Sql(db, &temp);
 					}
-					else if(temp.revert == ALLOK){
-						send_online_all_sql(db,&temp);
+					else if (ALLOK == temp.revert)
+					{
+						Send_Online_All_Sql(db, &temp);
 					}
-					else if(temp.revert == SEEOK){
-						see_online_all_sql(db,&temp);
+					else if (SEEOK == temp.revert)
+					{
+						See_Online_All_Sql(db, &temp);
 					}
 					printf("发送完毕！\n");
-					memset(&temp,0,sizeof(struct chat));
+					memset(&temp, 0, sizeof(struct chat));
+				//	if (1 == n)
+				//	{
+				//		exit(1);
+				//	}
 				}
-				if(--nready <= 0){
+				if (--nready <= 0)
+				{
 					break;
 				}
 			}
@@ -171,30 +207,3 @@ int main()
 	close(sockfd);
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

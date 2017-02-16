@@ -1,6 +1,6 @@
-#ifndef CMD_H__
-#define CMD_H__
+#ifndef __CMD__
+#define __CMD__
 
-int cmd_user(sqlite3 *db,struct chat *temp,int sockfd);
+int Cmd_User(sqlite3 *db, struct chat *temp, int sockfd);
 
 #endif

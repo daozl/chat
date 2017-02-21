@@ -299,34 +299,6 @@ void trans(int sockfd,struct chat *temp)
 	}
 }
 
-void kick(int sockfd,struct chat *temp)
-{
-	printf("\033[24;2H请输入需要踢出的用户名");
-	my_fgets(temp->toname,20,stdin);
-	write(sockfd,temp,sizeof(struct chat));
-}
-
-void shut(int sockfd,struct chat *temp)
-{
-	printf("\033[24;2H请输入需要禁言的用户名：");
-	my_fgets(temp->toname,20,stdin);
-	write(sockfd,temp,sizeof(struct chat));
-}
-
-void Remove(int sockfd,struct chat *temp)
-{
-	printf("\033[24;2H请输入需要解禁的用户名：");
-	my_fgets(temp->toname,20,stdin);
-	write(sockfd,temp,sizeof(struct chat ));
-}
-
-void cancel(int sockfd, struct chat *temp)
-{
-	printf("\033[24;2H请输入需要注销的用户名：");
-	my_fgets(temp->toname,20,stdin);
-	write(sockfd,temp,sizeof(struct chat));
-}
-
 void exit_tell(int sockfd,struct chat *temp)
 {
 	char *msg = "下线啦！";
@@ -339,18 +311,6 @@ void exit_tell(int sockfd,struct chat *temp)
 	printf("\033[%d;2H你对 %s 说：%s (%s)\n",row++,temp->toname,temp->msg,temp->time);
 }
 
-void exit_tell_kick(int sockfd,struct chat *temp)
-{
-	char *msg = "被管理员踢出！";
-
-	memset(temp->msg,0,1024);
-	strcat(temp->msg,temp->toname); //管理员发给服务器 admin to （user）
-	strcpy(temp->toname,"所有人");
-	strcat(temp->msg,msg);
-	temp->cmd = ALL;
-	write(sockfd,temp,sizeof(struct chat));
-	printf("\033[%d;2H你对 %s 说：%s (%s)\n",row++,temp->toname,temp->msg,temp->time);
-}
 
 
 

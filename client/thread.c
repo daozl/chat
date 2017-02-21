@@ -14,11 +14,7 @@ void *thread_read(void *arg)
 		{
 			case CHAT:
 				{
-					if (MYFLAGNO == temp.revert)
-					{
-						printf("\033[%d;2H您被禁言了，请联系管理员！\n", row++);
-					}
-					else if (ONLINEOUT == temp.revert)
+					if (ONLINEOUT == temp.revert)
 					{
 						printf("\033[%d;2H您需要呼叫的用户已经下线！\n", row++);
 					}
@@ -38,11 +34,7 @@ void *thread_read(void *arg)
 
 			case ALL:
 				{
-					if (MYFLAGNO == temp.revert)
-					{
-						printf("\033[%d;2H您被禁言了，请联系管理员！\n", row++);
-					}
-					else if (ALLOK == temp.revert)
+					if (ALLOK == temp.revert)
 					{
 						printf("\033[%d;2H(%s)   %s 对 所有人 说： %s\n",row++, temp.time, temp.name, temp.msg);
 					}
@@ -151,99 +143,6 @@ void *thread_read(void *arg)
 					break;
 				}
 
-			case KICK:
-				{
-					if (ONLINEOUT == temp.revert)
-					{
-						printf("\033[%d;2H该用户不在线！\n", row++);
-					}
-					else if (KICKOK == temp.revert)
-					{
-						printf("\033[%d;2H您被管理员踢出！系统即将自动退出！\n", row++);
-						exit_tell_kick(fd, &temp);
-						sleep(3);
-						system("reset");
-						exit(0);
-					}
-					else
-					{
-						printf("\033[%d;2H接受到错误的服务器消息！\n", row++);
-					}
-					printf("\033[24;2H");
-					fflush(stdout);
-					break;
-				}
-
-			case SHUT:
-				{
-					if (ONLINEOUT == temp.revert)
-					{
-						printf("\033[%d;2H该用户不在线！\n", row++);
-					}
-					else if (0 == temp.revert)
-					{
-						printf("\033[%d;2H禁言失败！\n", row++);
-					}
-					else if (1 == temp.revert)
-					{
-						printf("\033[%d;2H(%s)   您已经被管理员禁言！\n", row++, temp.time);
-					}
-					else
-					{
-						printf("\033[%d;2H接受到错误的服务器消息！\n", row++);
-					}
-					printf("\033[24;2H");
-					fflush(stdout);
-					break;
-				}
-
-			case REMOVE:
-				{
-					if (ONLINEOUT == temp.revert)
-					{
-						printf("\033[%d;2H该用户不在线！\n", row++);
-					}
-					else if (TOFLAGOK == temp.revert)
-					{
-						printf("\033[%d;2H该用户不需要解禁！\n", row++);
-					}
-					else if (0 == temp.revert)
-					{
-						printf("\033[%d;2H解禁失败！\n", row++);
-					}
-					else if (1 == temp.revert)
-					{
-						printf("\033[%d;2H(%s)   您已经被管理员解禁！珍惜机会，远离BUG！\n", row++, temp.time);
-					}
-					else
-					{
-						printf("\033[%d;2H接受到错误的服务器消息！\n", row++);
-					}
-					printf("\033[24;2H");
-					fflush(stdout);
-					break;
-				}
-
-			case CANCEL:
-				{
-					if (1 == temp.revert)
-					{
-						printf("\033[%d;2H该用户成功被注销！\n", row++);
-					}
-					else if (ONLINEIN == temp.revert)
-					{
-						printf("\033[%d;2H该用户在线！请先进行踢出！\n", row++);
-					}
-					else if (0 == temp.revert)
-					{
-						printf("\033[%d;2H注销失败！\n", row++);
-					}
-					else
-					{
-						printf("\033[%d;2H接受到错误的服务器消息！\n", row++);
-					}
-					break;
-				}
 		}
 		memset(&temp, 0, sizeof(struct chat));
 	}

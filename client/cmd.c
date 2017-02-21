@@ -46,18 +46,6 @@ int analy_admin_cmd(char *cmd)
 	else if(strcmp(cmd,"password") == 0){
 		return PASSWORD;
 	}
-	else if(strcmp(cmd,"kick") == 0){
-		return KICK;
-	}
-	else if(strcmp(cmd,"shut") == 0){
-		return SHUT;
-	}
-	else if(strcmp(cmd,"remove") == 0){
-		return REMOVE;
-	}
-	else if(strcmp(cmd,"cancel") == 0){
-		return CANCEL;
-	}
 	else if(strcmp(cmd,"help") == 0){
 		return HELP;
 	}
@@ -94,18 +82,6 @@ int analy_client_cmd(char *cmd)
 	}
 	else if(strcmp(cmd,"password") == 0){
 		return PASSWORD;
-	}
-	else if(strcmp(cmd,"kick") == 0){
-		return KICK;
-	}
-	else if(strcmp(cmd,"shut") == 0){
-		return SHUT;
-	}
-	else if(strcmp(cmd,"remove") == 0){
-		return REMOVE;
-	}
-	else if(strcmp(cmd,"cancel") == 0){
-		return CANCEL;
 	}
 	else if(strcmp(cmd,"help") == 0){
 		return HELP;

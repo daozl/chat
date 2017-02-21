@@ -21,10 +21,6 @@ int main(int argc,char *argv[])
 		printf("Error! The correct format is \n./client 127.0.0.1\n");
 		exit(1);
 	}
-	if ((host = gethostbyname(argv[1])) == NULL){
-		printf("Error! gethostbyname failure!\n");
-		exit(1);
-	}
 	if((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0){
 		printf("Error! socket failure!\n");
 		exit(1);
@@ -32,8 +28,7 @@ int main(int argc,char *argv[])
 
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
-	server_addr.sin_addr = *((struct in_addr *)host->h_addr);
-
+	inet_pton(AF_INET,argv[1],&server_addr.sin_addr);
 	if (connect(sockfd,(struct sockaddr *)&server_addr,sizeof(struct sockaddr)) < 0){
 		printf("Error! connect failure!\n");
 		exit(1);
@@ -171,22 +166,6 @@ int main(int argc,char *argv[])
 				break;
 			case CHANGE:
 				change(sockfd,&temp);
-				sleep(1);
-				break;
-			case KICK:
-				kick(sockfd,&temp);
-				sleep(1);
-				break;
-			case SHUT:
-				shut(sockfd,&temp);
-				sleep(1);
-				break;
-			case REMOVE:
-				Remove(sockfd,&temp);
-				sleep(1);
-				break;
-			case CANCEL:
-				cancel(sockfd,&temp);
 				sleep(1);
 				break;
 			case HELP:

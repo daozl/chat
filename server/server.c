@@ -170,10 +170,6 @@ int main()
 					{
 						write(temp.sockfd, &temp, sizeof(struct chat));
 					}
-					else if (KICKOK == temp.revert)
-					{
-						write(temp.sockfd, &temp, sizeof(struct chat));
-					}
 					else if (CHATOK == temp.revert)
 					{
 						write(temp.sockfd, &temp, sizeof(struct chat));

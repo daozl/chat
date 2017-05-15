@@ -63,21 +63,4 @@ int analy_client_cmd(char *cmd)
 		return SEE;
 	}
 	else if(strcmp(cmd,"data") == 0){
-		return DATA;
-	}
-	else if(strcmp(cmd,"trans") == 0){
-		return TRANS;
-	}
-	else if(strcmp(cmd,"password") == 0){
-		return PASSWORD;
-	}
-	else if(strcmp(cmd,"help") == 0){
-		return HELP;
-	}
-	else if(strcmp(cmd,"exit") == 0){
-		return EXIT;
-	}
-	else{
-		return ERROR;
-	}
-}
+		retur

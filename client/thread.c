@@ -122,27 +122,6 @@ void *thread_read(void *arg)
 					}
 					break;
 				}
-
-			case CHANGE:
-				{
-					if (REGNO == temp.revert)
-					{
-						printf("\033[%d;2H该用户名已经被使用！\n", row++);
-					}
-					else if (1 == temp.revert)
-					{
-						printf("\033[%d;2H修改用户名成功！系统即将自动退出！请重新登录！\n", row++);
-						sleep(1);
-						system("reset");
-						exit(0);
-					}
-					else
-					{
-						printf("\033[%d;2H接受到错误的服务器消息！\n", row++);
-					}
-					break;
-				}
-
 		}
 		memset(&temp, 0, sizeof(struct chat));
 	}

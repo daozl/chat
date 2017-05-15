@@ -148,14 +148,6 @@ int main(int argc,char *argv[])
 					sleep(2);
 				}
 				break;
-			case FACE:
-				face(sockfd,&temp);
-				sleep(1);
-				break;
-			case HI:
-				hi(sockfd,&temp);
-				sleep(1);
-				break;
 			case PASSWORD:
 				password(sockfd,&temp);
 				sleep(3);
@@ -163,10 +155,6 @@ int main(int argc,char *argv[])
 			case TRANS:
 				trans(sockfd,&temp);
 				sleep(5);
-				break;
-			case CHANGE:
-				change(sockfd,&temp);
-				sleep(1);
 				break;
 			case HELP:
 				if(admin == 2){
